@@ -1,11 +1,20 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include<locale>
 
 #define PERIOD12 12
 #define PERIOD26 26
 #define PERIOD9 9
 #define SIZE 1000
+
+struct comma_separator : std::numpunct<char>
+{
+	virtual char do_decimal_point() const override
+	{
+		return ',';
+	}
+};
 
 void generateWeights(long double* weights, unsigned int period)
 {
@@ -55,6 +64,8 @@ int main()
 
 	std::ofstream macdFile("macd.txt", std::ios::out);
 	std::ofstream signalFile("signal.txt", std::ios::out);
+	signalFile.imbue(std::locale(std::cout.getloc(), new comma_separator));
+	macdFile.imbue(std::locale(std::cout.getloc(), new comma_separator));
 
 
 	for (unsigned int i = 0; i < SIZE; i++)
