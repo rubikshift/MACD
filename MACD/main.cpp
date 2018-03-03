@@ -1,20 +1,15 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include<locale>
+#include <locale>
+#include <cmath>
+#include "investor.h"
 
 #define PERIOD12 12
 #define PERIOD26 26
 #define PERIOD9 9
 #define SIZE 1000
 
-struct comma_separator : std::numpunct<char>
-{
-	virtual char do_decimal_point() const override
-	{
-		return ',';
-	}
-};
 
 void generateWeights(double* weights, const unsigned int period)
 {
@@ -35,10 +30,10 @@ void generateWeights(double* weights, const unsigned int period)
 double calcEMA(const double* data, const unsigned int start, const unsigned int period, const double* weights)
 {
 	double EMA = 0;
+	if (start < period + 1)
+		return EMA;
 	for (unsigned int i = 0; i < period + 1; i++)
 	{
-		if (start < i)
-			break;
 		EMA += weights[i] * data[start - i];
 	}
 	EMA /= weights[period + 1];
@@ -56,8 +51,8 @@ int main()
 {
 	double data[SIZE], MACD[SIZE];
 	double weights12[PERIOD12 + 2], weights26[PERIOD26 + 2], weights9[PERIOD9 + 2]; // tablice z wagami, dla optymalizacji obliczen
-	double signal, histogram;
-
+	double signal = 0;
+	double diff;
 	//init
 	generateWeights(weights12, PERIOD12);
 	generateWeights(weights26, PERIOD26);
@@ -65,22 +60,29 @@ int main()
 
 	std::ofstream macdFile("macd.txt", std::ios::out);
 	std::ofstream signalFile("signal.txt", std::ios::out);
-	std::cin.imbue(std::locale(std::cout.getloc(), new comma_separator));
-	signalFile.imbue(std::locale(std::cout.getloc(), new comma_separator));
 	macdFile.imbue(std::locale(std::cout.getloc(), new comma_separator));
-
+	signalFile.imbue(std::locale(std::cout.getloc(), new comma_separator));
 
 	for (unsigned int i = 0; i < SIZE; i++)
 		std::cin >> data[i];
+
+	Investor investor(data[0]);
 	for (unsigned int i = 0; i < SIZE; i++)
 	{
-		MACD[i] = calcMACD(data, i, weights12, weights26);
-		signal = calcEMA(MACD, i, PERIOD9, weights9);
-		histogram = MACD[i] - signal;
+		MACD[i] = 0;
+		signal;
+		if(i > PERIOD26)
+			MACD[i] = calcMACD(data, i, weights12, weights26);
+		
+		if (i > PERIOD26 + PERIOD9)
+		{
+			signal = calcEMA(MACD, i, PERIOD9, weights9);
+
+			investor.react(data[i], MACD[i], signal);
+		}
 		macdFile << MACD[i] << "\n";
 		signalFile << signal << "\n";
 	}
-
 	macdFile.close();
 	signalFile.close();
 	return 0;

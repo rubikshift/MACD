@@ -1,0 +1,11 @@
+StartMoney: 0
+StartStocks: 1000
+StartPrice: 100
+Start: 100000
+
+EndMoney: 509,5
+EndStocks: 232
+EndPrice: 1679
+End: 390038
+
+Status: 390,038%
