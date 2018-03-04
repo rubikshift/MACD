@@ -9,15 +9,6 @@ struct comma_separator : std::numpunct<char>
 	}
 };
 
-struct Log
-{
-	Decision decision;
-	double price;
-	double money;
-	double treshold;
-	Log(double price, Decision decision, double money, double treshold);
-};
-
 class Investor
 {
 	private:
@@ -25,7 +16,6 @@ class Investor
 		double money;
 		double startPrice;
 		double lastPrice;
-		double buyPrice;
 		unsigned int stocks;
 
 		void buy(double price);
@@ -33,6 +23,5 @@ class Investor
 	public:
 		Investor(double startPrice);
 		~Investor();
-		double getTreshold() const;
 		void react(double price, double macd, double signal);
 };

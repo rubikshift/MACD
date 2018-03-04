@@ -8,7 +8,7 @@ Investor::Investor(double startPrice)
 	money = 0;
 	stocks = 1000;
 	treshold = 1;
-	this->startPrice = buyPrice = startPrice;
+	this->startPrice = startPrice;
 	lastPrice = startPrice;
 }
 Investor::~Investor()
@@ -58,7 +58,6 @@ void Investor::buy(double price)
 	unsigned int n = static_cast<unsigned int>(money / price);
 	stocks += n;
 	money -= n * price;
-	buyPrice = price;
 }
 
 void Investor::sell(double price)
@@ -66,17 +65,4 @@ void Investor::sell(double price)
 	unsigned int n = stocks;
 	money += n * price;
 	stocks -= n;
-}
-
-double Investor::getTreshold() const
-{
-	return treshold;
-}
-
-Log::Log(double price, Decision decision, double money, double treshold)
-{
-	this->decision = decision;
-	this->price = price;
-	this->money = money;
-	this->treshold = treshold;
 }
