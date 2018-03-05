@@ -51,8 +51,8 @@ int main()
 {
 	double data[SIZE], MACD[SIZE];
 	double weights12[PERIOD12 + 2], weights26[PERIOD26 + 2], weights9[PERIOD9 + 2]; // tablice z wagami, dla optymalizacji obliczen
-	double signal = 0;
-	double diff;
+	double signal = 0, prevDiff = 0;
+
 	//init
 	generateWeights(weights12, PERIOD12);
 	generateWeights(weights26, PERIOD26);
@@ -70,19 +70,19 @@ int main()
 	for (unsigned int i = 0; i < SIZE; i++)
 	{
 		MACD[i] = 0;
-		signal;
+		prevDiff = MACD[i] - signal;
 		if(i > PERIOD26)
 			MACD[i] = calcMACD(data, i, weights12, weights26);
 		
 		if (i > PERIOD26 + PERIOD9)
 		{
 			signal = calcEMA(MACD, i, PERIOD9, weights9);
-
-			investor.react(data[i], MACD[i], signal);
+			investor.react(data[i], MACD[i] - signal, prevDiff);
 		}
 		macdFile << MACD[i] << "\n";
 		signalFile << signal << "\n";
 	}
+
 	macdFile.close();
 	signalFile.close();
 	return 0;

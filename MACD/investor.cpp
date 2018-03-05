@@ -7,7 +7,7 @@ Investor::Investor(double startPrice)
 {
 	money = 0;
 	stocks = 1000;
-	treshold = 1;
+	treshold = 0.75;
 	this->startPrice = startPrice;
 	lastPrice = startPrice;
 }
@@ -34,22 +34,25 @@ Investor::~Investor()
 	summary.close();
 }
 
-void Investor::react(double price, double macd, double signal)
+void Investor::react(double price, double diff, double prevDiff)
 {
-	double diff = macd - signal;
-	Decision decision = diff > 0 ? WAIT_TO_BUY : WAIT_TO_SELL;
+	Decision decision;
 	lastPrice = price;
+
+	if (diff - prevDiff <= 0)
+		decision = diff > 0 ? WAIT_TO_BUY : WAIT_TO_SELL;
+	else if (diff - prevDiff > 0)
+		return;
 
 	if (money < price && decision == WAIT_TO_BUY)
 		return;
 	else if (stocks == 0 && decision == WAIT_TO_SELL)
 		return;
 
-	if (decision == WAIT_TO_BUY && diff < treshold)
+	if (decision == WAIT_TO_BUY && abs(diff) < treshold)
 		buy(price);
 	else if (decision == WAIT_TO_SELL && abs(diff) < treshold)
 		sell(price);
-	
 	return;
 }
 

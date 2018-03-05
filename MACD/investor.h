@@ -23,5 +23,5 @@ class Investor
 	public:
 		Investor(double startPrice);
 		~Investor();
-		void react(double price, double macd, double signal);
+		void react(double price, double diff, double prevDiff);
 };
